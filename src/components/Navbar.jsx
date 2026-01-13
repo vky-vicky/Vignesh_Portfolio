@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-scroll';
 import { motion } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Terminal } from 'lucide-react';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -27,9 +27,14 @@ const Navbar = () => {
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="text-2xl font-bold font-heading text-white"
+                    className="flex items-center gap-3 text-2xl font-bold font-heading text-white"
                 >
-                    Vignesh<span className="text-neon-cyan ml-1">M</span>
+                    <div className="w-10 h-10 bg-neon-cyan/10 rounded-xl overflow-hidden flex items-center justify-center border border-neon-cyan/20">
+                        <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                    </div>
+                    <span>
+                        Vignesh<span className="text-neon-cyan ml-1">M</span>
+                    </span>
                 </motion.div>
 
                 {/* Desktop Menu */}
