@@ -27,13 +27,13 @@ const Navbar = () => {
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-3 text-2xl font-bold font-heading text-white"
+                    className="flex items-center gap-3 text-2xl font-bold font-heading text-white group cursor-pointer"
                 >
-                    <div className="w-10 h-10 bg-neon-cyan/10 rounded-xl overflow-hidden flex items-center justify-center border border-neon-cyan/20">
-                        <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                    <div className="w-10 h-10 bg-neon-cyan/10 rounded-xl overflow-hidden flex items-center justify-center border border-neon-cyan/20 group-hover:border-neon-cyan/50 transition-colors">
+                        <Terminal size={20} className="text-neon-cyan group-hover:scale-110 transition-transform" />
                     </div>
                     <span>
-                        Vignesh<span className="text-neon-cyan ml-1">M</span>
+                        Vignesh <span className="text-neon-cyan">M</span>
                     </span>
                 </motion.div>
 
