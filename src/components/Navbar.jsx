@@ -1,96 +1,152 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-scroll';
-import { motion } from 'framer-motion';
-import { Menu, X, Terminal } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, ArrowDownToLine } from 'lucide-react';
+
+const links = [
+  { label: 'About', href: '#about' },
+  { label: 'Skills', href: '#skills' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'Contact', href: '#contact' },
+];
 
 const Navbar = () => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
 
-    useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 50);
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-    const navLinks = [
-        { name: 'About', to: 'about' },
-        { name: 'Skills', to: 'skills' },
-        { name: 'Experience', to: 'experience' },
-        { name: 'Projects', to: 'projects' },
-        { name: 'Contact', to: 'contact' },
-    ];
-
-    return (
-        <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-deep-space/90 backdrop-blur-lg py-4 shadow-lg border-b border-white/10' : 'bg-transparent py-6'}`}>
-            <div className="container mx-auto px-6 flex justify-between items-center">
-                <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-3 text-2xl font-bold font-heading text-white group cursor-pointer"
-                >
-                    <div className="w-10 h-10 bg-neon-cyan/10 rounded-xl overflow-hidden flex items-center justify-center border border-neon-cyan/20 group-hover:border-neon-cyan/50 transition-colors">
-                        <Terminal size={20} className="text-neon-cyan group-hover:scale-110 transition-transform" />
-                    </div>
-                    <span>
-                        Vignesh <span className="text-neon-cyan">M</span>
-                    </span>
-                </motion.div>
-
-                {/* Desktop Menu */}
-                <div className="hidden md:flex space-x-8">
-                    {navLinks.map((link, index) => (
-                        <motion.div
-                            key={link.name}
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                        >
-                            <Link
-                                to={link.to}
-                                smooth={true}
-                                duration={500}
-                                className="cursor-pointer text-gray-300 hover:text-neon-cyan transition-colors font-medium"
-                            >
-                                {link.name}
-                            </Link>
-                        </motion.div>
-                    ))}
-                </div>
-
-                {/* Mobile Toggle */}
-                <div className="md:hidden">
-                    <button onClick={() => setIsOpen(!isOpen)} className="text-white">
-                        {isOpen ? <X size={28} /> : <Menu size={28} />}
-                    </button>
-                </div>
-            </div>
-
-            {/* Mobile Menu */}
-            {isOpen && (
-                <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="md:hidden bg-deep-space border-t border-white/10"
-                >
-                    <div className="flex flex-col p-6 space-y-4">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.name}
-                                to={link.to}
-                                smooth={true}
-                                duration={500}
-                                onClick={() => setIsOpen(false)}
-                                className="text-gray-300 hover:text-neon-cyan text-lg"
-                            >
-                                {link.name}
-                            </Link>
-                        ))}
-                    </div>
-                </motion.div>
-            )}
-        </nav>
+  // Track active section
+  useEffect(() => {
+    const sectionIds = links.map(l => l.href.replace('#', ''));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: '-40% 0px -55% 0px' }
     );
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <>
+      <motion.nav
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          scrolled
+            ? 'bg-[#08070b]/80 backdrop-blur-xl border-b border-white/[0.04]'
+            : 'bg-transparent'
+        }`}
+      >
+        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
+          {/* Logo */}
+          <a
+            href="#hero"
+            className="font-mono text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors tracking-tight"
+          >
+            <span className="text-[var(--accent)]">&lt;</span>
+            {' '}vignesh.dev{' '}
+            <span className="text-[var(--accent)]">/&gt;</span>
+          </a>
+
+          {/* Desktop links */}
+          <div className="hidden md:flex items-center gap-8">
+            {links.map(({ label, href }) => (
+              <a
+                key={label}
+                href={href}
+                className={`nav-link font-mono text-xs uppercase tracking-[0.15em] ${
+                  activeSection === href.replace('#', '')
+                    ? 'text-[var(--text-primary)] active'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
+                } transition-colors`}
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+
+          {/* Resume + mobile toggle */}
+          <div className="flex items-center gap-4">
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noreferrer"
+              className="hidden md:flex items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+            >
+              Resume
+              <ArrowDownToLine size={13} />
+            </a>
+
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-[#08070b]/95 backdrop-blur-2xl flex flex-col items-center justify-center gap-8 md:hidden"
+          >
+            {links.map(({ label, href }, i) => (
+              <motion.a
+                key={label}
+                href={href}
+                onClick={() => setMobileOpen(false)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ delay: i * 0.05 }}
+                className="text-2xl font-light tracking-tight text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                style={{ fontFamily: 'Outfit, sans-serif' }}
+              >
+                {label}
+              </motion.a>
+            ))}
+
+            <motion.a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noreferrer"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="mt-4 btn-outline inline-flex items-center gap-2"
+            >
+              Resume <ArrowDownToLine size={14} />
+            </motion.a>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
 };
 
 export default Navbar;
